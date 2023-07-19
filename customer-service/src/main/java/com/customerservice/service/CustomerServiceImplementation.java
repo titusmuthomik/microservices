@@ -1,7 +1,11 @@
 package com.customerservice.service;
 
 import com.customerservice.entity.CustomerEntity;
+import com.customerservice.external.client.LoanService;
+import com.customerservice.external.model.LoanEntity;
+import com.customerservice.model.CustomerResponse;
 import com.customerservice.repository.CustomerRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +17,9 @@ public class CustomerServiceImplementation implements CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private LoanService loanService;
 
     @Override
     public CustomerEntity save(CustomerEntity customer) {
@@ -26,9 +33,33 @@ public class CustomerServiceImplementation implements CustomerService {
     }
 
     @Override
-    public CustomerEntity getCustomerById(Long id) {
+    public CustomerResponse getCustomerById(Long id) {
+
+        LoanEntity loan = loanService.getLoanById(1L).getBody();
+
         Optional<CustomerEntity> customer = customerRepository.findById(id);
-        return customer.get();
+
+
+        CustomerResponse.LoanDetails loanDetails = CustomerResponse.LoanDetails.builder()
+                .loanId(loan.getLoanId())
+                .amount(loan.getAmount())
+                .status(loan.getStatus())
+                .dueDate(loan.getDueDate())
+                .customerId(loan.getCustomerId())
+                .disbursementDate(loan.getDisbursementDate())
+                .paymentDate(loan.getPaymentDate())
+                .build();
+
+
+        return CustomerResponse.builder()
+                .customerId(customer.get().getCustomerId())
+                .phone(customer.get().getPhone())
+                .firstName(customer.get().getFirstName())
+                .lastName(customer.get().getLastName())
+                .email(customer.get().getEmail())
+                .loanDetails(loanDetails)
+                .build();
+
     }
 
     @Override

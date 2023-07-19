@@ -1,6 +1,7 @@
 package com.customerservice.controller;
 
 import com.customerservice.entity.CustomerEntity;
+import com.customerservice.model.CustomerResponse;
 import com.customerservice.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,8 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerEntity> getCustomerById(@PathVariable Long id) {
-        CustomerEntity customer = customerService.getCustomerById(id);
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
+        CustomerResponse customer = customerService.getCustomerById(id);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
