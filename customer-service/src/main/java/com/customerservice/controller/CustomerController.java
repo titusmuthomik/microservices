@@ -3,6 +3,7 @@ package com.customerservice.controller;
 import com.customerservice.entity.CustomerEntity;
 import com.customerservice.model.CustomerResponse;
 import com.customerservice.service.CustomerService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<CustomerEntity> save(@RequestBody CustomerEntity customer) {
-        CustomerEntity newCustomer = customerService.save(customer);
+    public ResponseEntity<CustomerResponse> save(@RequestBody CustomerEntity customer) {
+        CustomerResponse newCustomer = customerService.save(customer);
         return new ResponseEntity<>(newCustomer, HttpStatus.OK);
     }
 

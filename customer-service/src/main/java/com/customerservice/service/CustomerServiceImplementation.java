@@ -5,14 +5,18 @@ import com.customerservice.external.client.LoanService;
 import com.customerservice.external.model.LoanEntity;
 import com.customerservice.model.CustomerResponse;
 import com.customerservice.repository.CustomerRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
+@Log4j2
 public class CustomerServiceImplementation implements CustomerService {
 
     @Autowired
@@ -21,10 +25,41 @@ public class CustomerServiceImplementation implements CustomerService {
     @Autowired
     private LoanService loanService;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Override
-    public CustomerEntity save(CustomerEntity customer) {
-        customerRepository.save(customer);
-        return customer;
+    public CustomerResponse save(CustomerEntity customer) {
+
+//        TODO create loan before assignment
+
+
+//        assign customer a loan of id 1
+        log.info("Calling loan service to assign customer a loan");
+
+        Long loanId = 1L;
+
+        String url = "http://LOAN-SERVICE/api/v1/loans/" + loanId;
+        LoanEntity loan = restTemplate.getForObject(url, LoanEntity.class);
+
+        assert loan != null;
+        CustomerResponse.LoanDetails loandetails = CustomerResponse.LoanDetails.builder()
+                .loanId(loan.getLoanId())
+                .amount(loan.getAmount())
+                .customerId(loan.getCustomerId())
+                .status(loan.getStatus())
+                .paymentDate(loan.getPaymentDate())
+                .disbursementDate(loan.getDisbursementDate())
+                .dueDate(loan.getDueDate())
+                .build();
+
+        return CustomerResponse.builder()
+                .email(customer.getEmail())
+                .customerId(customer.getCustomerId())
+                .nationalId(customer.getNationalId())
+                .phone(customer.getPhone())
+                .loanDetails(loandetails)
+                .build();
     }
 
     @Override

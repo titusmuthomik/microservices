@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface CustomerService {
-    CustomerEntity save(CustomerEntity customer);
+    CustomerResponse save(CustomerEntity customer);
 
     List<CustomerEntity> getAllCustomers();
 
